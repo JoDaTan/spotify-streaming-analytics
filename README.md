@@ -44,11 +44,11 @@ INSERT INTO spotify_raw (data)
 SELECT jsonb_array_elements(pg_read_file('Streaming_History_Audio_2022-2025.json')::jsonb);
 ```
 
-2.  Data Transformation
+2.  **Data Transformation**
 The raw JSON is parsed and loaded into the star schema using SQL INSERT statements with JOIN operations to maintain referential integrity across dimension and fact tables.
 
-3.  Data Cleaning
+3.  **Data Cleaning**
     - Standardized platform names (consolidated Android variants)
     - Added song type classification (Music vs. Podcast) based on Spotify URI patterns
 
-4.  Key Insights  
+# Key Insights  
