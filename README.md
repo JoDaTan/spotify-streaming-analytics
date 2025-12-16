@@ -1,6 +1,3 @@
-# Spotify-streaming-history
-This project is an SQL-based data analysis project that transforms raw Spotify listening history (in JSON format) into a star schema data warehouse for comprehensive listening behavior analysis.
-
 # Overview
 This project explores personal Spotify listening data using PostgreSQL to uncover listening patterns, preferences, and habits. The analysis identifies favorite artists, albums, and tracks, while examining listening behaviors such as peak listening hours, shuffle patterns, and platform preferences. I built this project to:
 - Apply SQL data analysis skills on a real-world personal dataset
