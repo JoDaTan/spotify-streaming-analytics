@@ -1,10 +1,7 @@
-/*
-This project uses SQL queries to explore how I actually listen to music;
-From behaviour --> habits --> preferences --> changes over time.
-*/
-
 -- ACT 1: MY LISTENING BEHAVIOUR (BASIC QUERIES)
-/* Questions to answer
+/* 
+This part of the project uses basic querying techniques; SELECT, WHERE, ORDER keywords to answer questions tahat give insight into how I use Spotify
+The Questions:
 1. What does a typical stream record look like?
 2. How often do streams end early, and what are the most common reasons?
 3. Which platforms do I listen on the most, and how does play length differ by platform?
@@ -14,7 +11,6 @@ From behaviour --> habits --> preferences --> changes over time.
 
 -- Act 1 Scene I: What does a typical stream record look like?
 SELECT * FROM streams;
-
 
 -- Act 1 Scene II: How often do streams end early, and what are the most common reasons?
 SELECT 
@@ -60,7 +56,7 @@ FROM streams
 GROUP BY status
 ORDER BY total_listening_time DESC;
 
--- Insight: My streaming is based overwhelmingly on internet connectivity
+-- Insight: My streaming is based overwhelmingly on internet connectivity (online)
 
 
 -- Act 1 Scene V: What proportion of streams are skipped?
@@ -71,3 +67,4 @@ FROM streams
 GROUP BY skipped;
 
 --Insight: 42.6% of streams are skipped
+
