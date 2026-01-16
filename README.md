@@ -31,9 +31,15 @@ To ensure analytical clarity, the following definitions are used:
 - Favourite artist/song/album: artist/song/album with above average engagment (total stream/total listen time)
 
 # Analytical Themes & Insight
-1. **Listening Behavior (Device, Connectivity, Completion/Skip Rate):** My listening habits are mobile-first (~98% of all streams), online-driven, with frequent skips (42.6% of streams). 50% of streams end early and due to user interaction (forward skip - 55%, backward skip / remote - 8%).
+1. **Listening Behavior**
+   - Mobile-first consumption (~98% of streams)
+   - Predmoninantly online listening
+   - High interaction rate with frequent skipping
+     - 42.6% of streams skipped
+     - ~50% end early due to user interaction (forward skip dominates - 55%, followed by bakward/remote skips - 8%)
 
-2. **Engagement & Frequency:** Listening is genre-loyal, artist-concentrated and highly interactive dominated by progressive/alternative rock, concentrated among a few core artists, with repeat returns to favorite albums, frequent skips on certain songs, and minimal engagement with non‑music audio.
+2. **Engagement & Frequency:**
+    - 
 
-3. 
+4. 
 -----
