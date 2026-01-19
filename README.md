@@ -39,11 +39,19 @@ To ensure analytical clarity, the following definitions are used:
      - ~50% end early due to user interaction (forward skip dominates - 55%, followed by bakward/remote skips - 8%)
 
 2. **Listening Engagement & Concentration**
-   - My listening is heavily skewed towards progressive rock/metal and alternative rock, anchored by a small set of artists; TOOL, A Perfect Circle, Soen, Porcupine Tree, The Pineapple Thief, Manchester Orchestra, Half Moon Run
-   - My top 20 artists account for 47.5% of all streams (5,039 v 10,610)
-   - High replay intensity: Manchester Orchestra, A Perfect Circle, TOOL, Soen, and Half Moon Run drive repeat engagement, with Manchester Orchestra exceeding 540 plays across three albums.
-   - Selective track engagement: Frequently replayed songs still show 70–100% skip rates, indicating album revisits with selective track-level disengagement (e.g., Deceiver never completed; The Wolf by Ben Howard 88% skipped).
-   - Music-first platform usage: Streams are overwhelmingly music-focused, averaging ~3 minutes per play with a 49% overall skip rate. Non-music audio shows minimal engagement, with 100% of podcast streams skipped, reinforcing music as the primary consumption intent.
+   - Dominant genre: Progressive rock/metal and alternative rock anchored by a small set of artists; TOOL, A Perfect Circle, Soen, Porcupine Tree, The Pineapple Thief, Manchester Orchestra, Half Moon Run
+   - Top 20 artists account for 47.5% of all streams (5,039 v 10,610)
+   - High replay intensity
+   - Selective track engagement: Frequently replayed songs show 70–100% skip rates
+   - Streams are overwhelmingly music-focused (~3 minutes per play and 49% overall skip rate). 
   
 3. **Listening Engagement Quality & Patterns**
-   - 
+   - Listening engagement split between exploration and immersion
+     - Exploration: high plays and frequent skips (35 - 65% completion) - Progressive and Alternative rock
+     - Immersion: lower play count but near perfect completion rate (70%+) - ambient and indie
+   - Above‑average songs: Favourite Boy, That Home, Quietly, The Grocery, Fake Plastic Trees
+   - Artist engagement: Manchester Orchestra (662 plays, 55% completion), A Perfect Circle (550, 61%), Soen (460, 38%) show high play counts but low completion. By contrast, Dan Deacon (94%), Novo Amor (78%), City Boys Band (85%) are almost always finished.
+  
+4. 
+
+
