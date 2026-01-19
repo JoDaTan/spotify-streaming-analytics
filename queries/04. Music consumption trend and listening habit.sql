@@ -55,12 +55,14 @@ New Interest:
 
 -- Act 4 Scene II: Which songs rise or fall in rank over time?
 /*
-Metric used to judge song rank will be listen count
+This analysis excludes streams in 2025 as the data only covers for January 2025.
+Also song rank is judged based on play count and not total listen time
 Why? Progressive songs are typically 8-12 minutes long which is almost 2x the listen time of the average song from other genre
 */
 WITH song_ranking AS (
     SELECT
-        so.song_title,
+        ar.artist_name,
+		so.song_title,
         EXTRACT(year FROM st.stream_time) AS listen_year,
         COUNT(st.stream_id) AS play_count,
         DENSE_RANK() OVER (
@@ -69,33 +71,44 @@ WITH song_ranking AS (
         ) AS song_rank
     FROM streams st
     JOIN songs so ON so.song_id = st.song_id
-    GROUP BY so.song_title, listen_year
+	JOIN artists ar ON ar.artist_id = so.artist_id
+    WHERE EXTRACT(year FROM st.stream_time) IN (2022, 2023, 2024)
+    GROUP BY artist_name, so.song_title, listen_year
 ),
 pivoted AS (
     SELECT 
-        song_title,
+        artist_name,
+		song_title,
         MAX(CASE WHEN listen_year = 2022 THEN song_rank END) AS rank_2022,
         MAX(CASE WHEN listen_year = 2023 THEN song_rank END) AS rank_2023,
-        MAX(CASE WHEN listen_year = 2024 THEN song_rank END) AS rank_2024,
-        MAX(CASE WHEN listen_year = 2025 THEN song_rank END) AS rank_2025
+        MAX(CASE WHEN listen_year = 2024 THEN song_rank END) AS rank_2024
     FROM song_ranking
-    GROUP BY song_title
+    GROUP BY artist_name, song_title
+    HAVING 
+        MAX(CASE WHEN listen_year = 2022 THEN song_rank END) IS NOT NULL
+        AND MAX(CASE WHEN listen_year = 2023 THEN song_rank END) IS NOT NULL
+        AND MAX(CASE WHEN listen_year = 2024 THEN song_rank END) IS NOT NULL
 )
-SELECT song_title,
-       rank_2022, rank_2023, rank_2024, rank_2025
+SELECT 
+    artist_name, 
+	song_title,
+    rank_2022, 
+    rank_2023, 
+    rank_2024,
+    (rank_2022 - rank_2024) AS overall_change
 FROM pivoted
 ORDER BY 
-    (CASE WHEN rank_2022 IS NULL THEN 1 ELSE 0 END
-   + CASE WHEN rank_2023 IS NULL THEN 1 ELSE 0 END
-   + CASE WHEN rank_2024 IS NULL THEN 1 ELSE 0 END
-   + CASE WHEN rank_2025 IS NULL THEN 1 ELSE 0 END) ASC,
-    COALESCE(rank_2022, 9999),
-    COALESCE(rank_2023, 9999),
-    COALESCE(rank_2024, 9999),
-    COALESCE(rank_2025, 9999);
+    rank_2022,
+    rank_2023,
+    rank_2024;
 /*
 Insight:
-
+Out of the songs I played consistently 2022 to 2025, five of them are by Manchester Orchestra. 
+This is consistent with my top artist analysis and confirms that they are my go-to band.
+Song movement
+- "The Silence" had the biggest jump—it went from #11 to my #2 most-played song by 2024
+- "The Alien" stayed pretty steady in the top spots all three years
+- "Telepath" and "I Know How To Speak" both dipped in the middle but bounced back strong
 */
 
 
@@ -117,18 +130,28 @@ FROM streams
 GROUP BY listen_year
 ORDER BY listen_year;
 /*
-Insight: 
-Music listen spanned from 2022 to 2025 with a peak in 2023 followed by a sharp decline in 2024 and 2025.
+| Year | Listen Time | Cumulative Time |
+|------|-------------|-----------------|
+| 2022 | 2d 8h 32m | 2d 8h 32m |
+| 2023 | 17d 2h 4m | 19d 10h 36m |
+| 2024 | 0d 3h 0m | 19d 13h 37m |
+| 2025 | 0d 1h 52m | 19d 15h 29m |
+
+In total, I streamed 20 days of music, from 2022 to 2025 with my peak listen in 2023 (17 days listen time) before a decline in 2024 and 2025.
+In December 2023, I switched streaming platforms from Spotify to YouTube Music hence the decline in activity for 2024 and 2025.
 */
 
 
 -- Act 4 Scene IV: For my top artists, which songs dominate my listening?
+-- see top artist definition
 WITH artist_stat AS (
 	-- calculates the number of streams and listening hours for each artist
 	SELECT
 		ar.artist_name,
 		COUNT(st.stream_id) number_of_streams,
-		SUM(st.play_length_ms) total_listen_time
+		SUM(st.play_length_ms) total_listen_time,
+		RANK() OVER(ORDER BY COUNT(st.stream_id) DESC) AS stream_rank,
+		RANK() OVER(ORDER BY SUM(st.play_length_ms) DESC) AS time_rank
 	FROM streams st
 	JOIN songs so
 		ON so.song_id = st.song_id
@@ -136,16 +159,26 @@ WITH artist_stat AS (
 		ON ar.artist_id = so.artist_id
 	GROUP BY ar.artist_name
 ),
+averages AS (
+	-- calculate the average streams and listen time across all artists
+	SELECT
+		AVG(number_of_streams) AS avg_streams,
+		AVG(total_listen_time) AS avg_listen_time
+	FROM artist_stat
+),
 top10_artist AS (
--- using the artist_stat, this filters for the top 10 artist to establish a table of artist I will call top artist
+	-- filters for top 10 artists who are above average in BOTH metrics
 	SELECT
 		artist_name
 	FROM artist_stat
-	ORDER BY number_of_streams DESC, total_listen_time DESC
+	CROSS JOIN averages
+	WHERE number_of_streams > avg_streams 
+		AND total_listen_time > avg_listen_time
+	ORDER BY (stream_rank + time_rank) / 2.0
 	LIMIT 10
 ),
 song_rank AS (
--- for my top artists, rank their songs in order of stream_count and listen_time
+	-- for my top artists, rank their songs in order of stream_count and listen_time
 	SELECT 
 		so.song_title,
 		ar.artist_name,
@@ -168,16 +201,20 @@ SELECT
 	song_title,
 	total_play,
 	CONCAT(
-		(listen_time / (1000 * 60 * 60)) / 24, 'd ',
-		(listen_time / (1000 * 60 * 60)) % 24, 'h ',
+		(listen_time / (1000 * 60 * 60)), 'h ',
 		(listen_time / (1000 * 60)) % 60, 'm'
-	) listen_time_text
+	) listen_time_text,
+	song_rank
 FROM song_rank
-WHERE song_rank.song_rank = 1;
+WHERE song_rank <= 3
+ORDER BY artist_name, song_rank;
 /*
 Insight:
-Among the top 10 artists, each has one standout track that dominates listening. 
-Across them all, “Favourite Boy” by Half Moon Run is the most dominant song overall.
+Absolute favourites (these songs dominate the listens by these artists)
+- Favourite Boy (Half Moon Run), The Outsider (A Perfect Circle), The Alien, The Sunshine, The Grocery - Manchester Orchestra.
+
+Balanced Catalog
+Descending (TOOL), Arriving Somewhere But Not Here (Porcupine Tree), Delenda and Savia (Soen) longer listen time but moderate plays - typical of progressive rock songs
 */
 
 
@@ -226,4 +263,5 @@ FROM streak_group
 GROUP BY artist_name, album_title, streak_id
 HAVING COUNT(*) > 1
 ORDER BY songs_in_streak DESC;
+
 
