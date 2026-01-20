@@ -225,43 +225,86 @@ WITH ordered_streams AS (
 		so.song_title,
 		ar.artist_name,
 		al.album_title,
-		LAG(ar.artist_name) OVER(
-			ORDER BY st.stream_time
-		) AS prev_artist,
-		lag(al.album_title) OVER(
-			ORDER BY st.stream_time
-		) AS prev_album
+		LAG(ar.artist_name) OVER(ORDER BY st.stream_time) AS prev_artist,
+		LAG(al.album_title) OVER(ORDER BY st.stream_time) AS prev_album
 	FROM streams st
 	JOIN songs so ON so.song_id = st.song_id
 	JOIN albums al ON al.album_id = so.album_id
 	JOIN artists ar ON ar.artist_id = al.album_artist
 ),
-streaks AS (
+artist_streaks AS (
 	SELECT
 		stream_time,
-		artist_name, 
-		album_title,
-		CASE
-			WHEN artist_name = prev_artist OR album_title = prev_album THEN 0 ELSE 1
-		END AS streak_flag
+		artist_name,
+		CASE WHEN artist_name = prev_artist THEN 0 ELSE 1 END AS artist_streak_flag
 	FROM ordered_streams
 ),
-streak_group AS (
+artist_streak_groups AS (
 	SELECT 
 		stream_time, 
 		artist_name,
+		SUM(artist_streak_flag) OVER (ORDER BY stream_time) AS streak_id
+	FROM artist_streaks
+),
+album_streaks AS (
+	SELECT
+		stream_time,
 		album_title,
-		SUM(streak_flag) OVER (ORDER BY stream_time) AS streak_id
-	FROM streaks
+		artist_name,
+		CASE WHEN album_title = prev_album THEN 0 ELSE 1 END AS album_streak_flag
+	FROM ordered_streams
+),
+album_streak_groups AS (
+	SELECT 
+		stream_time,
+		album_title,
+		artist_name,
+		SUM(album_streak_flag) OVER (ORDER BY stream_time) AS streak_id
+	FROM album_streaks
+),
+artist_binge_summary AS (
+	SELECT 
+		artist_name,
+		COUNT(*) AS songs_in_streak,
+		MIN(stream_time) AS streak_start,
+		MAX(stream_time) AS streak_end
+	FROM artist_streak_groups
+	GROUP BY artist_name, streak_id
+	HAVING COUNT(*) >= 3
+),
+album_binge_summary AS (
+	SELECT 
+		artist_name,
+		album_title,
+		COUNT(*) AS songs_in_streak,
+		MIN(stream_time) AS streak_start,
+		MAX(stream_time) AS streak_end
+	FROM album_streak_groups
+	GROUP BY artist_name, album_title, streak_id
+	HAVING COUNT(*) >= 3
+),
+all_binges AS (
+	SELECT 'Artist' AS binge_type, songs_in_streak FROM artist_binge_summary
+	UNION ALL
+	SELECT 'Album' AS binge_type, songs_in_streak FROM album_binge_summary
 )
 SELECT 
-	artist_name,
-	album_title,
-	--streak_id,
-	COUNT(*) songs_in_streak
-FROM streak_group
-GROUP BY artist_name, album_title, streak_id
-HAVING COUNT(*) > 1
-ORDER BY songs_in_streak DESC;
+	binge_type,
+	COUNT(*) AS total_binges,
+	ROUND(AVG(songs_in_streak), 1) AS avg_songs_per_binge,
+	MIN(songs_in_streak) AS shortest_binge,
+	MAX(songs_in_streak) AS longest_binge
+FROM all_binges
+GROUP BY binge_type;
+/*
+Insight:
+| Binge Type | Total Binges | Avg Songs per Binge | Shortest Binge | Longest Binge |
+|------------|--------------|---------------------|----------------|---------------|
+| Album      | 415          | 8.3                 | 3              | 69            |
+| Artist     | 534          | 12.0                | 3              | 70            |
+
+My binge analysis reveals that I have strong artist attachments and when I'm in the mood for a particular artist, I stay with them for extended periods (12+ songs on average). 
+The relatively shorter album binges suggest I rarely listen to full albums in one sitting, preferring instead to curate my own journey through an artist's work
+*/
 
 
