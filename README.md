@@ -1,5 +1,5 @@
-# Spotify Listening Behavior Analysis
-This project analyzes my personal Spotify listening history using SQL to uncover listening behavior, engagement, and preferences over time. Rather than treating this as a set of isolated queries, the analysis is structured as a behavioral narrative that explores how songs, albums, and artists gain, sustain, or lose attention.
+# Spotify Listening Behaviour Analysis
+This project analyses my personal Spotify listening history using SQL to uncover listening behaviour, engagement, and preferences over time. Rather than treating this as a set of isolated queries, the analysis is structured as a behavioural narrative that explores how songs, albums, and artists gain, sustain, or lose attention.
 
 The goal is to demonstrate analytical thinking, SQL proficiency, and data storytelling, not just query syntax.
 
@@ -8,7 +8,7 @@ The goal is to demonstrate analytical thinking, SQL proficiency, and data storyt
 - Time range: 2022 - 2025
 - Records: ~10,600 streaming events
 
-The raw data was extracted, normalized and modeled into a star schema for analysis
+The raw data was extracted, normalised, and modelled into a star schema for analysis
 
 # Data Model
 The database consists of:
@@ -25,18 +25,21 @@ The database consists of:
 
 # Key Definitions
 To ensure analytical clarity, the following definitions are used:
-- Stream: A single play event of song on a device(`platform`), recorded with timestamp (`stream_time`), duration (`play_length_ms`) and associated metadata
+- Stream: A single play event of a song on a device(`platform`), recorded with timestamp (`stream_time`), duration (`play_length_ms`) and associated metadata
 - Completed stream: a stream with `reason_end = 'trackdone'`
 - Frequent plays: a song with a stream count >= 10
-- Favourite artist/song/album: artist/song/album with above average engagment (total stream/total listen time)
+- Favourite artist/song/album: artist/song/album with above average engagement (total stream/total listen time)
+- weighted_completion_rate: describes how consistently I finish songs across an album, giving more weight to the songs I actually listen to most.
+- album: songs grouped under the same album title and artist, aggregated via the album_id relationship.
+
 
 # Analytical Themes & Insight
 1. **Listening Behavior**
    - Mobile-first consumption (~98% of streams)
-   - Predmoninantly online listening
+   - Predominantly online listening
    - High interaction rate with frequent skipping
      - 42.6% of streams skipped
-     - ~50% end early due to user interaction (forward skip dominates - 55%, followed by bakward/remote skips - 8%)
+     - ~50% end early due to user interaction (forward skip dominates - 55%, followed by backwards/remote skips - 8%)
 
 2. **Listening Engagement & Concentration**
    - Dominant genre: Progressive rock/metal and alternative rock anchored by a small set of artists; TOOL, A Perfect Circle, Soen, Porcupine Tree, The Pineapple Thief, Manchester Orchestra, Half Moon Run
@@ -46,37 +49,37 @@ To ensure analytical clarity, the following definitions are used:
    - Streams are overwhelmingly music-focused (~3 minutes per play and 49% overall skip rate). 
   
 3. **Listening Engagement Quality & Patterns**
-   - Listening engagement split between exploration and immersion
+   - Listening engagement is split between exploration and immersion
      - Exploration: high plays and frequent skips (35 - 65% completion) - Progressive and Alternative rock
      - Immersion: lower play count but near perfect completion rate (70%+) - ambient and indie
    - Above‑average songs: Favourite Boy, That Home, Quietly, The Grocery, Fake Plastic Trees
-   - Artist engagement: Manchester Orchestra (662 plays, 55% completion), A Perfect Circle (550, 61%), Soen (460, 38%) show high play counts but low completion. By contrast, Dan Deacon (94%), Novo Amor (78%), City Boys Band (85%) are almost always finished.
+   - Artist engagement: Manchester Orchestra (662 plays, 55% completion), A Perfect Circle (550, 61%), Soen (460, 38%) show high play counts but low completion. By contrast, Dan Deacon (94%), Novo Amor (78%), and City Boys Band (85%) are almost always finished.
   
 4. **Listening Trends, My Favourites and Binge Behaviour**
-   - Favourite artists: Manchester Orchestra (top 3 artist every year), TOOL & A Perfect Circle (steady top 8 ranks across years),
+   - Favourite artists: Manchester Orchestra (top 3 artists every year), TOOL & A Perfect Circle (steady top 8 ranks across years),
    - Growing favourite: Novo Amor (Indie)
    - One to watch: Hans Zimmer
    - Favourite songs: The Alien, The Sunshine, The Grocery (Manchester Orchestra), Descending (TOOL), Favourite Boy (Half Moon Run)
-   - Peak listening year: 2023 (17days listen time in total)
-   - Very artist attached (when binging an artist, ccan listen to 12 songs in a row).
+   - Peak listening year: 2023 (17 days of listening time in total)
+   - Very artist attached (when binging an artist, can listen to 12 songs in a row).
   
 # Limitations
-- Insights reflect one user (mine) listening behaviour.
+- Insights reflect one user's (mine) listening behaviour.
 - User interaction (skips, end) lacks context
-- Cross platform switch: In December 2023, I switched streaming platforms from Spotify to YouTube Music. As a result, the data for 2024 and 2025 is sparse
+- Cross-platform switch: In December 2023, I switched streaming platforms from Spotify to YouTube Music. As a result, the data for 2024 and 2025 is sparse
 - No genre metadata
 
 # Future Improvement
-- time based analysis: break down listening by month/week/day for seasonal patterns
+- time-based analysis: break down listening by month/week/day for seasonal patterns
 - genre metadata integration
 - Visualization
 
 # Takeaway
-This project reveals a dual pattern of listening behavior:
+This project reveals a dual pattern of listening behaviour:
 - Exploration mode → Progressive/alt‑rock staples (Manchester Orchestra, TOOL, A Perfect Circle) dominate play counts but often show lower completion rates due to long track lengths.
 - Immersion mode → Select artists (Novo Amor, Dan Deacon, City Boys Band) and smaller folk/indie/ambient albums are played less often but almost always completed, reflecting deeper engagement.
 
 Across 2022–2025, I streamed ~20 days of music, with a peak in 2023 (17 days) before declining after switching platforms. 
 Stable favourites (Manchester Orchestra, TOOL, A Perfect Circle) anchor my listening identity, while new interests (Novo Amor, Hans Zimmer) highlight evolving tastes.
-Overall, the project shows that my listening is both anchored by consistent favourites and shaped by emerging explorations, balancing breadth with depth.
+Overall, the project demonstrates that my listening is both anchored by consistent favourites and shaped by emerging explorations, striking a balance between breadth and depth.
 
